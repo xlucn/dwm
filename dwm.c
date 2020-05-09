@@ -160,6 +160,7 @@ static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
 static Monitor *createmon(void);
+static void cyclelayout(const Arg *arg);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
@@ -670,6 +671,18 @@ createmon(void)
 		m->pertag->sellts[i] = m->sellt;
 	}
 	return m;
+}
+
+void
+cyclelayout(const Arg *arg) {
+	int i;
+
+	for(i = 0; &layouts[i] != selmon->lt[selmon->sellt]; i++) ;
+	i += arg->i;
+	while (i < 0)
+		i += LENGTH(layouts);
+	i %= LENGTH(layouts);
+	setlayout(&((Arg) { .v = &layouts[i] }));
 }
 
 void
