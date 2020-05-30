@@ -72,6 +72,9 @@ static const Layout layouts[] = {
 	{ "|M|",      centeredmaster },
 };
 
+/* These symbols will replace the monocle symbol with corresponding client count */
+static const char *monocle_n[] = { NULL };
+
 /* key definitions */
 #define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
