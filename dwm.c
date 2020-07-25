@@ -159,7 +159,7 @@ static void clientmessage(XEvent *e);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
-static void copyvalidchars(char *text, char *rawtext);
+static void copyvalidchars(char *text, char *rawtext, int llimit, int ulimit);
 static Monitor *createmon(void);
 static void cyclelayout(const Arg *arg);
 static void destroynotify(XEvent *e);
@@ -463,11 +463,12 @@ buttonpress(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - (int)TEXTW(stext)) {
-			x = selmon->ww - TEXTW(stext) + lrpad / 2;
+		else if (ev->x > (x = selmon->ww - (int)TEXTW(stext) + lrpad)) {
 			click = ClkStatusText;
 
-			char *text = rawstext;
+			char stext_clean[256];
+			copyvalidchars(stext_clean, rawstext, 16, 32);
+			char *text = stext_clean;
 			int i = -1;
 			char ch;
 			statuscmdn = 0;
@@ -671,12 +672,12 @@ configurerequest(XEvent *e)
 }
 
 void
-copyvalidchars(char *text, char *rawtext)
+copyvalidchars(char *text, char *rawtext, int llimit, int ulimit)
 {
 	int i = -1, j = 0;
 
 	while(rawtext[++i]) {
-		if ((unsigned char)rawtext[i] >= ' ') {
+		if ((unsigned char)rawtext[i] >= ulimit || (unsigned char)rawtext[i] < llimit) {
 			text[j++] = rawtext[i];
 		}
 	}
@@ -777,6 +778,11 @@ drawbar(Monitor *m)
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
+	char stext_clean[256];
+	char *ts = stext_clean;
+	char *tp = stext_clean;
+	int tx = 0;
+	char ctmp;
 	Client *c;
 
 	if (!m->showbar)
@@ -785,8 +791,23 @@ drawbar(Monitor *m)
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
-		tw = TEXTW(stext);
-		drw_text(drw, m->ww - tw, 0, tw, bh, lrpad / 2, tpad, stext, 0);
+		copyvalidchars(stext_clean, rawstext, 0, 16);
+		tw = TEXTW(stext) - lrpad;
+		while (1) {
+			if ((unsigned int)*ts >= 16 + LENGTH(colors)) {
+				ts++;
+				continue;
+			}
+			ctmp = *ts;
+			*ts = '\0';
+			drw_text(drw, m->ww - tw + tx, 0, TEXTW(tp) - lrpad, bh, 0, tpad, tp, 0);
+			tx += TEXTW(tp) - lrpad;
+			if (ctmp == '\0')
+				break;
+			drw_setscheme(drw, scheme[(unsigned int)(ctmp - 16)]);
+			*ts = ctmp;
+			tp = ++ts;
+		}
 	}
 
 	for (c = m->clients; c; c = c->next) {
@@ -2148,7 +2169,7 @@ updatestatus(void)
 {
 	if (!gettextprop(root, XA_WM_NAME, rawstext, sizeof(rawstext)))
 		strcpy(rawstext, "dwm-"VERSION);
-	copyvalidchars(stext, rawstext);
+	copyvalidchars(stext, rawstext, 0, 32);
 	drawbar(selmon);
 }
 
