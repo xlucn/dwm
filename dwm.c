@@ -2233,9 +2233,7 @@ spawn(const Arg *arg)
 {
 	struct sigaction sa;
 
-	if (arg->v == dmenucmd)
-		dmenumon[0] = '0' + selmon->num;
-	else if (arg->v == statuscmd) {
+	if (arg->v == statuscmd) {
 		sprintf(statuscmdc, "%x", statuscmdn);
 		setenv("BUTTON", lastbutton, 1);
 	}
