@@ -1658,8 +1658,15 @@ movestack(const Arg *arg) {
 void
 quit(const Arg *arg)
 {
+	int nonempty = 0;
+	Monitor *m;
+
 	if(arg->i) restart = 1;
-	running = 0;
+	for (m = mons; m; m = m->next)
+		if (m->clients)
+			nonempty = 1;
+	if (!nonempty || restart)
+		running = 0;
 }
 
 Monitor *
