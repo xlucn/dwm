@@ -188,8 +188,10 @@ static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void movemouse(const Arg *arg);
+static void movestack(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *c);
+static Client *prevtiled(Client *c);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
@@ -1301,6 +1303,16 @@ pop(Client *c)
 	arrange(c->mon);
 }
 
+Client *
+prevtiled(Client *c) {
+	Client *p, *r;
+
+	for(p = selmon->clients, r = NULL; p && p != c; p = p->next)
+		if(!p->isfloating && ISVISIBLE(p))
+			r = p;
+	return r;
+}
+
 void
 propertynotify(XEvent *e)
 {
@@ -1336,6 +1348,44 @@ propertynotify(XEvent *e)
 		if (ev->atom == netatom[NetWMWindowType])
 			updatewindowtype(c);
 	}
+}
+
+void
+movestack(const Arg *arg) {
+	Client *sel = selmon->sel, *c;
+
+	if(!sel || sel->isfloating)
+		return;
+
+	if (arg->i > 0) {
+		if ((c = nexttiled(sel->next))) {
+			detach(sel);
+			sel->next = c->next;
+			c->next = sel;
+		} else {
+			detach(sel);
+			attach(sel);
+		}
+	} else {
+		if ((c = prevtiled(sel))) {
+			detach(sel);
+			sel->next = c;
+			if(selmon->clients == c)
+				selmon->clients = sel;
+			else {
+				for(c = selmon->clients; c->next != sel->next; c = c->next);
+				c->next = sel;
+			}
+		} else {
+			for(c = sel; c->next; c = c->next);
+			detach(sel);
+			sel->next = NULL;
+			c->next = sel;
+		}
+	}
+
+	focus(sel);
+	arrange(selmon);
 }
 
 void
