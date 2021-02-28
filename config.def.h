@@ -1,16 +1,16 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 32;       /* snap pixel */
-static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 1;        /* 0 means bottom bar */
+static unsigned int borderpx  = 1;        /* border pixel of windows */
+static unsigned int snap      = 32;       /* snap pixel */
+static int showbar            = 1;        /* 0 means no bar */
+static int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
-static const int barheightmin       = 24;       /* minimum height if > 0 */
-static const int barpaddingh        = 2;        /* horizontal padding for statusbar */
-static const int barpaddingtop      = 2;        /* top padding for statusbar */
-static const int barpaddingbottom   = 0;        /* bottom padding for statusbar */
+static int barheightmin       = 24;       /* minimum height if > 0 */
+static int barpaddingh        = 2;        /* horizontal padding for statusbar */
+static int barpaddingtop      = 2;        /* top padding for statusbar */
+static int barpaddingbottom   = 0;        /* bottom padding for statusbar */
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -38,9 +38,9 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
-static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+static float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static int nmaster     = 1;    /* number of clients in master area */
+static int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
 
 static const Layout layouts[] = {
@@ -71,6 +71,21 @@ static const char *termcmd[]  = { "st", NULL };
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
 static char statuscmdc[2] = {0};
 static char *statuscmd[] = { "statusc", statuscmdc, NULL };
+
+/*
+ * Xresources preferences to load at startup
+ */
+ResourcePref resources[] = {
+		{ "borderpx",           INTEGER, &borderpx },
+		{ "snap",               INTEGER, &snap },
+		{ "showbar",            INTEGER, &showbar },
+		{ "topbar",             INTEGER, &topbar },
+		{ "barheight",          INTEGER, &barheightmin },
+
+		{ "nmaster",            INTEGER, &nmaster },
+		{ "resizehints",        INTEGER, &resizehints },
+		{ "mfact",              FLOAT,   &mfact },
+};
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
