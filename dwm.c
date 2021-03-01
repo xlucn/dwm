@@ -964,6 +964,8 @@ drawbar(Monitor *m)
 	int tx = 0;
 	char ctmp;
 	Client *c;
+	Clr *scm_temp;
+	const char *color_pair[] = { foreground, background };
 
 	if (!m->showbar)
 		return;
@@ -977,7 +979,7 @@ drawbar(Monitor *m)
 		copyvalidchars(stext_clean, rawstext, 0, 16);
 		tw = TEXTW(stext) - lrpad;
 		while (1) {
-			if ((unsigned int)*ts >= 16 + LENGTH(colors)) {
+			if ((unsigned int)*ts >= 32) {
 				ts++;
 				continue;
 			}
@@ -987,7 +989,13 @@ drawbar(Monitor *m)
 			tx += TEXTW(tp) - lrpad;
 			if (ctmp == '\0')
 				break;
-			drw_setscheme(drw, scheme[(unsigned int)(ctmp - 16)]);
+			else if ((unsigned int)ctmp < 24)
+				color_pair[0] = color16[(unsigned int)ctmp - 16 + 8];
+			else if ((unsigned int)ctmp < 32)
+				color_pair[1] = color16[(unsigned int)ctmp - 24];
+			scm_temp = drw_scm_create(drw, color_pair, 2);
+			drw_setscheme(drw, scm_temp);
+			free(scm_temp);
 			*ts = ctmp;
 			tp = ++ts;
 		}

@@ -18,18 +18,31 @@ static unsigned int systrayspacing = 2;   /* systray spacing */
 static unsigned int systrayiconsize = 18; /* systray icon size */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static const int showsystray        = 1;     /* 0 means no systray */
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
-static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
-	               { col_gray1, col_gray4, col_gray2 },
-	               { col_gray1, col_cyan,  col_gray2 },
+static char foreground[] = "#000000";
+static char background[] = "#ffffff";
+static char color16[][8] = {
+	"#000000",
+	"#AA0000",
+	"#00AA00",
+	"#AAAA00",
+	"#0000AA",
+	"#AA00AA",
+	"#00AAAA",
+	"#AAAAAA",
+	"#555555",
+	"#FF5555",
+	"#55FF55",
+	"#FFFF55",
+	"#5555FF",
+	"#FF55FF",
+	"#55FFFF",
+	"#FFFFFF"
 };
+static const char *colors[][3]      = {
+	/*               fg          bg          border   */
+	[SchemeNorm] = { foreground, background, color16[0] },
+	[SchemeSel]  = { background, color16[6], color16[6] },
+ };
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -72,7 +85,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
@@ -88,7 +101,24 @@ ResourcePref resources[] = {
 		{ "showbar",            INTEGER, &showbar },
 		{ "topbar",             INTEGER, &topbar },
 		{ "barheight",          INTEGER, &barheightmin },
-
+		{ "foreground",         STRING,  &foreground },
+		{ "background",         STRING,  &background },
+		{ "color0",             STRING,  &color16[0] },
+		{ "color1",             STRING,  &color16[1] },
+		{ "color2",             STRING,  &color16[2] },
+		{ "color3",             STRING,  &color16[3] },
+		{ "color4",             STRING,  &color16[4] },
+		{ "color5",             STRING,  &color16[5] },
+		{ "color6",             STRING,  &color16[6] },
+		{ "color7",             STRING,  &color16[7] },
+		{ "color8",             STRING,  &color16[8] },
+		{ "color9",             STRING,  &color16[9] },
+		{ "color10",            STRING,  &color16[10] },
+		{ "color11",            STRING,  &color16[11] },
+		{ "color12",            STRING,  &color16[12] },
+		{ "color13",            STRING,  &color16[13] },
+		{ "color14",            STRING,  &color16[14] },
+		{ "color15",            STRING,  &color16[15] },
 		{ "nmaster",            INTEGER, &nmaster },
 		{ "resizehints",        INTEGER, &resizehints },
 		{ "systrayiconsize",    INTEGER, &systrayiconsize },
