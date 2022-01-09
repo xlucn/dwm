@@ -11,6 +11,12 @@ static int barheightmin       = 24;       /* minimum height if > 0 */
 static int barpaddingh        = 2;        /* horizontal padding for statusbar */
 static int barpaddingtop      = 2;        /* top padding for statusbar */
 static int barpaddingbottom   = 0;        /* bottom padding for statusbar */
+static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
+static unsigned int systrayspacing = 2;   /* systray spacing */
+static unsigned int systrayiconsize = 18; /* systray icon size */
+static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+static const int showsystray        = 1;     /* 0 means no systray */
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -84,6 +90,8 @@ ResourcePref resources[] = {
 
 		{ "nmaster",            INTEGER, &nmaster },
 		{ "resizehints",        INTEGER, &resizehints },
+		{ "systrayiconsize",    INTEGER, &systrayiconsize },
+		{ "systrayspacing",     INTEGER, &systrayspacing },
 		{ "mfact",              FLOAT,   &mfact },
 };
 
@@ -155,4 +163,3 @@ static const Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
