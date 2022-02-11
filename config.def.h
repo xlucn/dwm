@@ -3,6 +3,7 @@
 /* appearance */
 static unsigned int borderpx  = 1;        /* border pixel of windows */
 static unsigned int snap      = 32;       /* snap pixel */
+static int gappx              = 16;       /* gap between clients and borders */
 static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
@@ -122,6 +123,8 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_s,      togglesticky,   {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+	{ MODKEY,                       XK_minus,  setgap,         {.i = -8 } },
+	{ MODKEY,                       XK_equal,  setgap,         {.i = +8 } },
 	{ MODKEY,                       XK_comma,  shiftview,      {.i = -1 } },
 	{ MODKEY,                       XK_period, shiftview,      {.i = +1 } },
 	{ MODKEY|ControlMask,           XK_comma,  focusmon,       {.i = -1 } },
