@@ -1,25 +1,26 @@
 /* See LICENSE file for copyright and license details. */
+#include "dwm.h"
 
 /* appearance */
-static unsigned int borderpx  = 1;        /* border pixel of windows */
-static unsigned int snap      = 32;       /* snap pixel */
-static int gappx              = 16;       /* gap between clients and borders */
-static int showbar            = 1;        /* 0 means no bar */
-static int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=10" };
-static int barheightmin       = 24;       /* minimum height if > 0 */
-static int barpaddingh        = 2;        /* horizontal padding for statusbar */
-static int barpaddingtop      = 2;        /* top padding for statusbar */
-static int barpaddingbottom   = 0;        /* bottom padding for statusbar */
-static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
-static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
-static unsigned int systrayspacing = 2;   /* systray spacing */
-static unsigned int systrayiconsize = 18; /* systray icon size */
-static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-static const int showsystray        = 1;     /* 0 means no systray */
-static char foreground[] = "#000000";
-static char background[] = "#ffffff";
-static char color16[][8] = {
+unsigned int borderpx  = 1;        /* border pixel of windows */
+unsigned int snap      = 32;       /* snap pixel */
+int gappx              = 16;       /* gap between clients and borders */
+int showbar            = 1;        /* 0 means no bar */
+int topbar             = 1;        /* 0 means bottom bar */
+const char *fonts[]          = { "monospace:size=10" };
+int barheightmin       = 24;       /* minimum height if > 0 */
+int barpaddingh        = 2;        /* horizontal padding for statusbar */
+int barpaddingtop      = 2;        /* top padding for statusbar */
+int barpaddingbottom   = 0;        /* bottom padding for statusbar */
+const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
+unsigned int systrayspacing = 8;   /* systray spacing */
+unsigned int systrayiconsize = 18;   /* systray icon size */
+const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+const int showsystray        = 1;     /* 0 means no systray */
+char foreground[] = "#000000";
+char background[] = "#ffffff";
+char color16[][8] = {
 	"#000000",
 	"#AA0000",
 	"#00AA00",
@@ -37,18 +38,18 @@ static char color16[][8] = {
 	"#55FFFF",
 	"#FFFFFF"
 };
-static const char *colors[][3]      = {
+const char *colors[][3]      = {
 	/*               fg          bg          border   */
 	[SchemeNorm] = { foreground, background, color16[0] },
 	[SchemeSel]  = { background, color16[6], color16[6] },
  };
 
 /* tagging */
-static const char *tags[] = { "󰲡", "󰲣", "󰲥", "󰲧", "󰲩" };
-static const char *tags_busy[] = { "󰲠", "󰲢", "󰲤", "󰲦", "󰲨" };
-static const char *tags_curr[] = { "󰓏", "󰓏", "󰓏", "󰓏", "󰓏" };
+const char *tags[] = { "󰲡", "󰲣", "󰲥", "󰲧", "󰲩" };
+const char *tags_busy[] = { "󰲠", "󰲢", "󰲤", "󰲦", "󰲨" };
+const char *tags_curr[] = { "󰓏", "󰓏", "󰓏", "󰓏", "󰓏" };
 
-static const Rule rules[] = {
+const Rule rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
@@ -59,12 +60,12 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
-static int nmaster     = 1;    /* number of clients in master area */
-static int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
+float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+int nmaster     = 1;    /* number of clients in master area */
+int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
 
-static const Layout layouts[] = {
+const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      tile },    /* first entry is default */
 	{ "><>",      NULL },    /* no layout function means floating behavior */
@@ -74,7 +75,7 @@ static const Layout layouts[] = {
 };
 
 /* These symbols will replace the monocle symbol with corresponding client count */
-static const char *monocle_n[] = { NULL };
+const char *monocle_n[] = { NULL };
 
 /* key definitions */
 #define MODKEY Mod1Mask
@@ -85,12 +86,12 @@ static const char *monocle_n[] = { NULL };
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* commands */
-static const char *dmenucmd[] = { "dmenu_run", NULL };
-static const char *termcmd[]  = { "st", NULL };
+const char *dmenucmd[] = { "dmenu_run", NULL };
+const char *termcmd[]  = { "st", NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
-static char statuscmdc[2] = {0};
-static char *statuscmd[] = { "statusc", statuscmdc, NULL };
+char statuscmdc[2] = {0};
+char *statuscmd[] = { "statusc", statuscmdc, NULL };
 
 /*
  * Xresources preferences to load at startup
@@ -126,7 +127,7 @@ ResourcePref resources[] = {
 		{ "mfact",              FLOAT,   &mfact },
 };
 
-static const Key keys[] = {
+const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
@@ -176,7 +177,7 @@ static const Key keys[] = {
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
-static const Button buttons[] = {
+const Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
